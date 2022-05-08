@@ -1,0 +1,24 @@
+docker pull caddy
+docker container run -d -p 1024:80 \
+    --name my-caddy-server  \
+    caddy
+    
+docker cp Caddyfile my-caddy-server:/etc/caddy/Caddyfile
+docker exec my-caddy-server mkdir /usr/src
+docker exec my-caddy-server mkdir /usr/src/pages
+docker cp index.html my-caddy-server:/usr/src/pages
+docker cp about.html my-caddy-server:/usr/src/pages
+docker commit my-caddy-server
+docker images
+docker tag bdbd9667da13 my-caddy-image
+docker stop my-caddy-server
+docker rm my-caddy-server
+docker container run -d -p 1024:80 --name my-caddy-server \
+	-v $PWD/index.html:/usr/src/pages/index.html \
+	-v $PWD/Caddyfile:/etc/caddy/Caddyfile \
+	-v $PWD/about.html:/usr/src/pages/about.html
+	my-caddy-image
+docker commit my-caddy-server
+docker tag 2b67b6cc262b my-caddy-image-vol
+
+	
